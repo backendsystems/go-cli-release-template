@@ -1,6 +1,6 @@
 Output demo.gif
 
-Set Theme "Charm"
+Set Theme "Chalk"
 Set FontSize 14
 Set Width 800
 Set Height 400
