@@ -1,0 +1,78 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref for dry run (default main)
+        required: false
+        default: main
+        type: string
+      tag:
+        description: Tag label for dry run metadata (for example v0.1.0)
+        required: true
+        type: string
+      dry_run:
+        description: Run GoReleaser in snapshot mode (no GitHub release)
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Resolve release tag
+        id: vars
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            TAG="${{ github.ref_name }}"
+            CHECKOUT_REF="${{ github.ref }}"
+          else
+            TAG="${{ github.event.inputs.tag }}"
+            CHECKOUT_REF="${{ github.event.inputs.ref }}"
+          fi
+          if [[ ! "$TAG" =~ ^v ]]; then
+            echo "Expected a tag starting with 'v', got: $TAG"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "checkout_ref=$CHECKOUT_REF" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.vars.outputs.checkout_ref }}
+          fetch-depth: 0
+      - name: Create local tag for dry run
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        run: git tag -f "${{ steps.vars.outputs.tag }}"
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.2'
+      - name: Enforce dry-run for manual execution
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true' }}
+        run: |
+          echo "workflow_dispatch only supports dry-run mode. Use a pushed v* tag for real release."
+          exit 1
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          args: ${{ github.event_name == 'workflow_dispatch' && 'release --snapshot --clean' || 'release --clean' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+
+  brew:
+    if: ${{ github.event_name == 'push' }}
+    needs: release
+    runs-on: ubuntu-latest
+    environment: brew
+    steps:
+      - name: Mark Homebrew publish complete
+        run: echo "Homebrew cask is published by GoReleaser in the release job."

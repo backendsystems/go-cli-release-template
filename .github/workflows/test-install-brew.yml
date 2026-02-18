@@ -1,0 +1,52 @@
+name: Test Install via Homebrew
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+
+jobs:
+  brew-install:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu
+            arch: x64
+            runs_on: ubuntu-24.04
+          - os: ubuntu
+            arch: arm64
+            runs_on: ubuntu-24.04-arm
+          - os: macos
+            arch: x64
+            runs_on: macos-15-intel
+          - os: macos
+            arch: arm64
+            runs_on: macos-15
+    runs-on: ${{ matrix.runs_on }}
+    steps:
+      - name: Install YOUR_PROJECT with brew (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v brew >/dev/null 2>&1; then
+            NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          fi
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew update
+          brew install YOUR_OWNER/tap/YOUR_PROJECT
+          echo "$(/home/linuxbrew/.linuxbrew/bin/brew --prefix)/bin" >> "$GITHUB_PATH"
+
+      - name: Install YOUR_PROJECT with brew (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew update
+          brew install YOUR_OWNER/tap/YOUR_PROJECT
+
+      - name: Smoke test YOUR_PROJECT startup
+        uses: YOUR_OWNER/YOUR_PROJECT/.github/actions/smoke-test@main

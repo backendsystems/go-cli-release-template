@@ -1,0 +1,39 @@
+version: 2
+
+# Goreleaser config for Go binary release
+project_name: YOUR_PROJECT
+dist: .artifacts/goreleaser
+builds:
+  - main: .
+    binary: YOUR_PROJECT
+    ldflags:
+      - -X main.version={{ .Version }}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+release:
+  github:
+    owner: YOUR_OWNER
+    name: YOUR_PROJECT
+  draft: false
+  prerelease: false
+homebrew_casks:
+  - name: YOUR_PROJECT
+    repository:
+      owner: YOUR_OWNER
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    homepage: "https://github.com/YOUR_OWNER/YOUR_PROJECT"
+    description: "Fast local network scanner with hardware identification and a terminal UI"
+    license: "MIT"
+    commit_author:
+      name: "github-actions[bot]"
+      email: "github-actions[bot]@users.noreply.github.com"

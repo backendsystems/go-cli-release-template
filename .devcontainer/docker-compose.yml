@@ -1,0 +1,14 @@
+services:
+  YOUR_PROJECT:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    container_name: devcontainer-YOUR_PROJECT
+    network_mode: host
+    user: vscode
+    volumes:
+      - ..:/workspace
+    working_dir: /workspace
+    command: sleep infinity
+    stdin_open: true
+    tty: true

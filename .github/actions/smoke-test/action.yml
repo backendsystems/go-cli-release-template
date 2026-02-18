@@ -1,0 +1,8 @@
+name: Smoke test YOUR_PROJECT startup
+description: Verify YOUR_PROJECT was installed correctly.
+runs:
+  using: composite
+  steps:
+    - name: Smoke test YOUR_PROJECT startup
+      shell: bash
+      run: YOUR_PROJECT -version
