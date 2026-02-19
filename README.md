@@ -11,7 +11,7 @@ A template for Go CLI tools with multi-channel distribution out of the box.
    - **Homebrew**, tap formula auto-updated on release
    - **npm**, global install via `npm install -g`
    - **pipx**, install via `pipx install`
-- **Checksum verification**, all package installers are setup verify SHA256 against GoReleaser's checksums file
+- **Checksum verification**, all package installers are setup to verify SHA256 against GoReleaser's checksums file
 - **Smoke tests**, CI verifies the binary works for every install method
 - **`make fix`**, runs `go fmt`, `go vet`, and the new [`go fix`](https://go.dev/blog/gofix) to automatically modernize your Go code (Go 1.26+)
 
