@@ -32,7 +32,7 @@ go run setup.go
      ```bash
      cd npm-package && npm publish --access public
      ```
-     After that, add your npm automation token as `NODE_AUTH_TOKEN` in the repo's `npm` GitHub environment. Run `make npm` locally to verify the package builds.
+     After that, setup npm [Trusted Publisher](https://docs.npmjs.com/trusted-publishers) for your package. Run `make npm` locally to verify the package builds.
    - **PyPI**: use PyPI's [Pending Publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/) to set up trusted publishing before the package exists, no manual first publish needed. No token required, PyPI authenticates via OIDC automatically. Run `make pip` locally to verify the package builds.
 
 4. Create your Homebrew tap repo (`github.com/YOUR_OWNER/homebrew-tap`)
