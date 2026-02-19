@@ -26,7 +26,9 @@ go run setup.go
 
 > all instances of `YOUR_OWNER` and `YOUR_PROJECT` in the repo are replaced by setup.go
 
-3. Set up required [GitHub secrets and environments](https://github.com/YOUR_OWNER/YOUR_PROJECT/settings/secrets/actions):
+3. Create your Homebrew tap repo (`github.com/YOUR_OWNER/homebrew-tap`)
+
+4. Set up required [GitHub secrets and environments](https://github.com/YOUR_OWNER/YOUR_PROJECT/settings/secrets/actions):
    - `HOMEBREW_TAP_GITHUB_TOKEN`, token with write access to your tap repo
    - **npm**: create an npm org, then do a first manual publish to register the package name:
      ```bash
@@ -34,8 +36,6 @@ go run setup.go
      ```
      After that, setup npm [Trusted Publisher](https://docs.npmjs.com/trusted-publishers) for your package. Run `make npm` locally to verify the package builds.
    - **PyPI**: use PyPI's [Pending Publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/) to set up trusted publishing before the package exists, no manual first publish needed. No token required, PyPI authenticates via OIDC automatically. Run `make pip` locally to verify the package builds.
-
-4. Create your Homebrew tap repo (`github.com/YOUR_OWNER/homebrew-tap`)
 
 5. Build your CLI in `main.go`
 
